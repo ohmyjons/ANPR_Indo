@@ -30,7 +30,7 @@ import imutils
 # img = cv.imread(r"test images\AD2914JG.jpg") #salah segmentasi karakter
 # img = cv.imread(r"test images\B3023KEZ.jpg")
 # img = cv.imread(r"test images\plat1.jpeg") #segmentasi karakter salah
-img = cv.imread(r"test images\plat2.jpeg") #plat tidak terdeteksi
+img = cv.imread(r"ANPR\test_images\plat2.jpeg") #plat tidak terdeteksi
 # img = cv.imread(r"test images\plat3.jpeg") 
 # cv.imshow('img',img)
 # cv.waitKey(0)

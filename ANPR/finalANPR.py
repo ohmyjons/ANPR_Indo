@@ -13,9 +13,9 @@ import imutils
 # load citra RGB (BGR)
 # img = cv.imread("./test_images/1.jpg") # plat nomer not detect
 # img = cv.imread("./test_images/2.jpg") # salah segmentasi platnomer
-# img = cv.imread("./test_images/09.jpg") #salah segmentasi karakter
+img = cv.imread("./test_images/09.jpg") #salah segmentasi karakter
 # img = cv.imread("./test_images/9.jpg") 
-# img = cv.imread("./test_images/10.jpg") #salah segmentasi karakter
+# img = cv.imread("./test_images/10.jpg") 
 # img = cv.imread("./test_images/123.jpg")  #salah segmentasi platnomer
 # img = cv.imread("./test_images/124.jpg") #segmentasi plat salah
 # img = cv.imread("./test_images/AA5627JT.jpg")
@@ -23,8 +23,8 @@ import imutils
 # img = cv.imread("./test_images/AB5592EG.jpg")
 # img = cv.imread("./test_images/AD2914JG.jpg") #salah segmentasi karakter
 # img = cv.imread("./test_images/B3023KEZ.jpg")
-# img = cv.imread("./test_images/plat1.jpeg") #segmentasi karakter salah
-img = cv.imread("./test_images/plat2.jpeg") #plat tidak terdeteksi
+# img = cv.imread("./test_images/plat1.jpeg") 
+# img = cv.imread("./test_images/plat2.jpeg") 
 # img = cv.imread("./test_images/plat3.jpeg") 
 cv.imshow('img',img)
 cv.waitKey(0)
@@ -38,6 +38,8 @@ img = imutils.resize(img, width = 1280)
 
 # konversi dari RGB ke grayscale
 img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+cek_lowlight = 0
 
 # Normalisasi Cahaya
 def normalisasiCahaya(img_gray):
@@ -99,7 +101,9 @@ def lowLight(img_grey):
     
     # otsu + biner image
     ret,img_otsu = cv.threshold(tophat,0,255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-        
+
+    cv.imshow('Otsu',img_otsu)    
+    
     fig = plt.figure(figsize=(10, 7))
     row_fig = 2
     column_fig = 2
@@ -117,6 +121,10 @@ def lowLight(img_grey):
     return img_otsu
 
 
+# def dilations(img):
+
+
+
 # call fungsi normalisasi
 img_norm_bw = normalisasiCahaya(img_gray)
 # img_lowlight = lowLight(img_gray)
@@ -129,6 +137,7 @@ img_norm_bw = normalisasiCahaya(img_gray)
 
 def deteksiPlatnomer(img_norm_bw,img_gray):
     global img_plate_gray
+    global cek_lowlight
     # dapatkan contours dari citra kendaraan
     contours_vehicle, hierarchy = cv.findContours(img_norm_bw, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE) # get the contour for every area
 
@@ -177,6 +186,8 @@ def deteksiPlatnomer(img_norm_bw,img_gray):
 
         # tampilkan peringatan plat nomor tidak terdeteksi
         print("Plat nomor tidak ditemukan")
+        cek_lowlight = 1
+        print(cek_lowlight)
         deteksiPlatnomer(lowLight(img_gray),img_gray)
 
     # jika jumlah kandidat plat sama dengan 1
@@ -219,17 +230,17 @@ def deteksiPlatnomer(img_norm_bw,img_gray):
 
     fig2.add_subplot(row_fig, column_fig, 1)
     plt.imshow(cv.cvtColor(img_show_plate_bw, cv.COLOR_BGR2RGB))
-    plt.axis('off')
-    # plt.title("Lokasi Plat Nomor BW")
+    plt.axis('on')
+    plt.title("Lokasi Plat Nomor BW")
 
     fig2.add_subplot(row_fig, column_fig, 2)
     plt.imshow(cv.cvtColor(img_show_plate, cv.COLOR_BGR2RGB))
-    plt.axis('off')
+    plt.axis('on')
     plt.title("Lokasi Plat Nomor")
 
     fig2.add_subplot(row_fig, column_fig, 3)
     plt.imshow(img_plate_gray, cmap="gray")
-    plt.axis('off')
+    plt.axis('on')
     plt.title("Hasil Crop Plat Nomor")
 
     plt.show()
@@ -238,25 +249,32 @@ def deteksiPlatnomer(img_norm_bw,img_gray):
 
 
 img_crop = deteksiPlatnomer(img_norm_bw,img_gray)
+print(cek_lowlight)
 # print(img_crop)
 
 # SEGMENTASI KARAKTER
 # karakter yang di segmentasi adalah baris pertama yang berisi nilai unik setiap kendaraan
 def segmentasiKarakter(img_plate_gray):
-    # konversi dari grayscale ke BW
-    (thresh, img_plate_bw) = cv.threshold(img_plate_gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+    
+    if cek_lowlight == 0 :
+        # konversi dari grayscale ke BW
+        (thresh, img_plate_bw) = cv.threshold(img_plate_gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
 
-    # hasil dari konversi BW tidak terlalu mulus, 
-    # ada bagian-bagian kecil yang tidak diinginkan yang mungkin bisa mengganggu
-    # maka hilangkan area yang tidak diinginkan dengan operasi opening
+        # hasil dari konversi BW tidak terlalu mulus, 
+        # ada bagian-bagian kecil yang tidak diinginkan yang mungkin bisa mengganggu
+        # maka hilangkan area yang tidak diinginkan dengan operasi opening
 
-    # buat kernel dengan bentuk cross dan ukuran 3x3
-    kernel = cv.getStructuringElement(cv.MORPH_CROSS, (3,3))
+        # buat kernel dengan bentuk cross dan ukuran 3x3
+        kernel = cv.getStructuringElement(cv.MORPH_CROSS, (3,3))
 
-    # cv.imshow("sebelum open", img_plate_bw)
+        # cv.imshow("sebelum open", img_plate_bw)
 
-    # lakukan operasi opening dengan kernel di atas
-    img_plate_bw = cv.morphologyEx(img_plate_bw, cv.MORPH_OPEN, kernel) # apply morph open
+        # lakukan operasi opening dengan kernel di atas
+        img_plate_bw = cv.morphologyEx(img_plate_bw, cv.MORPH_OPEN, kernel) # apply morph open
+    
+    elif cek_lowlight == 1 :
+        img_plate_bw = lowLight(img_plate_gray)
+        # img_plate_bw = dilations(img_plate_bw) 
 
     # cv.imshow("sesudah open", img_plate_bw)
 
@@ -289,7 +307,7 @@ def segmentasiKarakter(img_plate_gray):
         # Dapatkan kandidat karakter jika:
         #   tinggi kontur dalam rentang 40 - 60 piksel
         #   dan lebarnya lebih dari atau sama dengan 10 piksel 
-        if h_char >= 40 and h_char <= 90 and w_char >=10:
+        if h_char >= 40 and h_char <= 95 and w_char >=20:
 
             # dapatkan index kandidat karakternya
             index_chars_candidate.append(index_counter_contour_plate)
@@ -344,13 +362,13 @@ def segmentasiKarakter(img_plate_gray):
 
                     # cari selisih nilai y kandidat A dan kandidat B
                     y_difference = abs(yA - yB)
+                    # print(y_difference)
 
-                    # jika perbedaannya kurang dari 11 piksel
-                    if y_difference < 11:
+                    # jika perbedaannya kurang dari 50 piksel
+                    if y_difference < 50:
                         
                         # tambahkan nilai score pada kandidat tersebut
                         score_chars_candidate[counter_index_chars_candidate] = score_chars_candidate[counter_index_chars_candidate] + 1 
-
             # lanjut ke kandidat lain
             counter_index_chars_candidate += 1
 
@@ -447,24 +465,25 @@ def segmentasiKarakter(img_plate_gray):
         
         fig3.add_subplot(row_fig, column_fig, 1)
         plt.imshow(img_plate_bw_rgb)
-        plt.axis('off')
+        plt.axis('on')
         plt.title("Kandidat Karakter BW")
         
         fig3.add_subplot(row_fig, column_fig, 2)
         plt.imshow(cv.cvtColor(img_plate_rgb, cv.COLOR_BGR2RGB))
-        plt.axis('off')
+        plt.axis('on')
         plt.title("Kandidat Karakter")
         
         fig3.add_subplot(row_fig, column_fig, 3)
         plt.imshow(cv.cvtColor(img_plate_rgb2, cv.COLOR_BGR2RGB))
-        plt.axis('off')
+        plt.axis('on')
         plt.title("Karakter Belum Terurut")
         
         fig3.add_subplot(row_fig, column_fig, 4)
         plt.imshow(cv.cvtColor(img_plate_rgb3, cv.COLOR_BGR2RGB))
-        plt.axis('off')
+        plt.axis('on')
         plt.title("Karakter Terurut")
         
         plt.show()
 
 
+segmentasiKarakter(img_crop)
