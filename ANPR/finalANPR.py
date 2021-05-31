@@ -13,8 +13,8 @@ import imutils
 # load citra RGB (BGR)
 # img = cv.imread("./test_images/1.jpg") # plat nomer not detect
 # img = cv.imread("./test_images/2.jpg") # salah segmentasi platnomer
-img = cv.imread("./test_images/09.jpg") #salah segmentasi karakter
-# img = cv.imread("./test_images/9.jpg") 
+# img = cv.imread("./test_images/09.jpg") #salah segmentasi karakter
+img = cv.imread("./test_images/9.jpg") 
 # img = cv.imread("./test_images/10.jpg") 
 # img = cv.imread("./test_images/123.jpg")  #salah segmentasi platnomer
 # img = cv.imread("./test_images/124.jpg") #segmentasi plat salah
@@ -138,6 +138,7 @@ img_norm_bw = normalisasiCahaya(img_gray)
 def deteksiPlatnomer(img_norm_bw,img_gray):
     global img_plate_gray
     global cek_lowlight
+    global img_show_plate,x_plate,y_plate,h_plate
     # dapatkan contours dari citra kendaraan
     contours_vehicle, hierarchy = cv.findContours(img_norm_bw, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE) # get the contour for every area
 
@@ -307,7 +308,7 @@ def segmentasiKarakter(img_plate_gray):
         # Dapatkan kandidat karakter jika:
         #   tinggi kontur dalam rentang 40 - 60 piksel
         #   dan lebarnya lebih dari atau sama dengan 10 piksel 
-        if h_char >= 40 and h_char <= 95 and w_char >=20:
+        if h_char >= 40 and h_char <= 90 and w_char >=20:
 
             # dapatkan index kandidat karakternya
             index_chars_candidate.append(index_counter_contour_plate)
@@ -485,5 +486,59 @@ def segmentasiKarakter(img_plate_gray):
         
         plt.show()
 
+        # KALSIFIKASI KARAKTER
+        # untuk mengklasifikasi karakter, saya menggunakan tutorial:
+        # https://www.tensorflow.org/tutorials/images/classification
+        # hasil klasifikasi akan tersimpan di var plate_number
+
+        # tinggi dan lebar citra untuk test
+        img_height = 40 
+        img_width = 40
+
+        # klas karakter
+        class_names = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+
+        # load model yang sudah terlatih
+        model = keras.models.load_model('./my_model')
+
+
+        # untuk menyimpan string karakter
+        num_plate = []
+        for char_sorted in index_chars_sorted:
+            x,y,w,h = cv.boundingRect(contours_plate[char_sorted])
+
+            # potong citra karakter
+            char_crop = cv.cvtColor(img_plate_bw[y:y+h,x:x+w], cv.COLOR_GRAY2BGR)
+
+            # resize citra karakternya
+            char_crop = cv.resize(char_crop, (img_width, img_height))
+
+            # preprocessing citra ke numpy array
+            img_array = keras.preprocessing.image.img_to_array(char_crop)
+
+            # agar shape menjadi [1, h, w, channels]
+            img_array = tf.expand_dims(img_array, 0)
+
+            # buat prediksi
+            predictions = model.predict(img_array)
+            score = tf.nn.softmax(predictions[0]) 
+
+            num_plate.append(class_names[np.argmax(score)])
+            print(class_names[np.argmax(score)], end='')
+
+        # Gabungkan string pada list
+        plate_number = ''
+        for a in num_plate:
+            plate_number += a
+
+        # Hasil deteksi dan pembacaan
+        cv.putText(img_show_plate, plate_number,(x_plate, y_plate + h_plate + 50), cv.FONT_ITALIC, 2.0, (0,255,0), 3)
+        cv.imshow(plate_number, img_show_plate)
+
+        print("\n"+plate_number)
+    
+    return 
 
 segmentasiKarakter(img_crop)
+
+    
