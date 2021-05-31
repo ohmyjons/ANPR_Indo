@@ -14,17 +14,17 @@ import imutils
 # img = cv.imread("./test_images/1.jpg") # plat nomer not detect
 # img = cv.imread("./test_images/2.jpg") # salah segmentasi platnomer
 # img = cv.imread("./test_images/09.jpg") #salah segmentasi karakter
-img = cv.imread("./test_images/9.jpg") 
+# img = cv.imread("./test_images/9.jpg") 
 # img = cv.imread("./test_images/10.jpg") 
 # img = cv.imread("./test_images/123.jpg")  #salah segmentasi platnomer
 # img = cv.imread("./test_images/124.jpg") #segmentasi plat salah
 # img = cv.imread("./test_images/AA5627JT.jpg")
 # img = cv.imread("./test_images/AB2638XU.jpg")
 # img = cv.imread("./test_images/AB5592EG.jpg")
-# img = cv.imread("./test_images/AD2914JG.jpg") #salah segmentasi karakter
+# img = cv.imread("./test_images/AD2914JG.jpg") 
 # img = cv.imread("./test_images/B3023KEZ.jpg")
 # img = cv.imread("./test_images/plat1.jpeg") 
-# img = cv.imread("./test_images/plat2.jpeg") 
+img = cv.imread("./test_images/plat2.jpeg") 
 # img = cv.imread("./test_images/plat3.jpeg") 
 cv.imshow('img',img)
 cv.waitKey(0)
@@ -308,7 +308,7 @@ def segmentasiKarakter(img_plate_gray):
         # Dapatkan kandidat karakter jika:
         #   tinggi kontur dalam rentang 40 - 60 piksel
         #   dan lebarnya lebih dari atau sama dengan 10 piksel 
-        if h_char >= 40 and h_char <= 90 and w_char >=20:
+        if h_char >= 40 and h_char <= 90 and w_char >=15:
 
             # dapatkan index kandidat karakternya
             index_chars_candidate.append(index_counter_contour_plate)
@@ -500,6 +500,9 @@ def segmentasiKarakter(img_plate_gray):
 
         # load model yang sudah terlatih
         model = keras.models.load_model('./my_model')
+        print("adasdaw /n")
+        print(model)
+        print("adasdaw /n")
 
 
         # untuk menyimpan string karakter
