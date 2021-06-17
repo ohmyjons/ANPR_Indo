@@ -7,7 +7,10 @@ from tensorflow import keras
 import imutils
 
 
+# def Anpr_Indo(img):
 
+# def __init__(self,img):
+#     self.img = img
 # PRAPENGOLAHAN
 
 # load citra RGB (BGR)
@@ -19,13 +22,18 @@ import imutils
 # img = cv.imread("./test_images/123.jpg")  #salah segmentasi platnomer
 # img = cv.imread("./test_images/124.jpg") #segmentasi plat salah
 # img = cv.imread("./test_images/AA5627JT.jpg")
-# img = cv.imread("./test_images/AB2638XU.jpg")
+# img = cv.imread("./test_images/AB2638XU.jpg") 
 # img = cv.imread("./test_images/AB5592EG.jpg")
-# img = cv.imread("./test_images/AD2914JG.jpg") 
+img = cv.imread("./test_images/AD2914JG.jpg")  # segmentasi salah D dobel
 # img = cv.imread("./test_images/B3023KEZ.jpg")
 # img = cv.imread("./test_images/plat1.jpeg") 
-img = cv.imread("./test_images/plat2.jpeg") 
+# img = cv.imread("./test_images/plat2.jpeg") 
 # img = cv.imread("./test_images/plat3.jpeg") 
+# img = cv.imread("./test_images/platw.jpeg")  #Salah Segmentasi 1 dan 0
+# img = cv.imread("./test_images/platad.jpeg")  # Salah Segementasi di D
+# img = cv.imread("./test_images/platl.jpeg") 
+# img = cv.imread("./test_images/plat3.jpeg") 
+# img = cv.imread("./test_images/plat_new_1.jpeg") 
 cv.imshow('img',img)
 cv.waitKey(0)
 
@@ -132,7 +140,7 @@ img_norm_bw = normalisasiCahaya(img_gray)
 
 
 # Deteksi Platnomer
-# Dalam penerapannya kita menggunakan cotours dari open xc
+# Dalam penerapannya kita menggunakan cotours dari open cv
 # untuk mendeteksi plat nomer
 
 def deteksiPlatnomer(img_norm_bw,img_gray):
@@ -308,7 +316,7 @@ def segmentasiKarakter(img_plate_gray):
         # Dapatkan kandidat karakter jika:
         #   tinggi kontur dalam rentang 40 - 60 piksel
         #   dan lebarnya lebih dari atau sama dengan 10 piksel 
-        if h_char >= 40 and h_char <= 90 and w_char >=15:
+        if h_char >= 40 and h_char <= 90 and w_char >=11:
 
             # dapatkan index kandidat karakternya
             index_chars_candidate.append(index_counter_contour_plate)
@@ -499,10 +507,10 @@ def segmentasiKarakter(img_plate_gray):
         class_names = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
         # load model yang sudah terlatih
-        model = keras.models.load_model('./my_model')
-        print("adasdaw /n")
-        print(model)
-        print("adasdaw /n")
+        model = keras.models.load_model('./my_model_new')
+        # print("adasdaw /n")
+        # print(model)
+        # print("adasdaw /n")
 
 
         # untuk menyimpan string karakter
@@ -525,7 +533,7 @@ def segmentasiKarakter(img_plate_gray):
             # buat prediksi
             predictions = model.predict(img_array)
             score = tf.nn.softmax(predictions[0]) 
-
+            # print(score)
             num_plate.append(class_names[np.argmax(score)])
             print(class_names[np.argmax(score)], end='')
 
@@ -544,4 +552,22 @@ def segmentasiKarakter(img_plate_gray):
 
 segmentasiKarakter(img_crop)
 
+# def recognitionPlat():
+#     print ("recognisi plat berjalan")
+#     anpr_indo()
+#     waitInput()
+
+# def waitInput():
+#     while True:
+#     # print ("asdsa")
+#         val = input("minta input  =  ")
+#         print (val)
+#         # print(val.type)
+#         if (val == '1'):
+#             recognitionPlat()
+            
+#         if (val != '1') :
+#             print ('input tidak ada')
+#             waitInput()
     
+# waitInput()

@@ -9,7 +9,7 @@ from tensorflow.keras.models import Sequential
 # I follow this instruction for image classification: 
 # https://www.tensorflow.org/tutorials/images/classification
 
-data_dir = r'E:\PYTHON\dataset' # training dataset folder
+data_dir = './dataset' # training dataset folder
 
 batch_size = 32
 img_height = 40
@@ -32,6 +32,7 @@ val_ds = tf.keras.preprocessing.image_dataset_from_directory(
   batch_size=batch_size)
 
 class_names = train_ds.class_names
+print(class_names)
 
 AUTOTUNE = tf.data.AUTOTUNE
 
@@ -65,7 +66,7 @@ model.compile(optimizer='adam',
 
 model.summary()
 
-epochs=10
+epochs=100
 history = model.fit(
   train_ds,
   validation_data=val_ds,
@@ -80,18 +81,18 @@ val_loss = history.history['val_loss']
 
 epochs_range = range(epochs)
 
-# plt.figure(figsize=(8, 8))
-# plt.subplot(1, 2, 1)
-# plt.plot(epochs_range, acc, label='Training Accuracy')
-# plt.plot(epochs_range, val_acc, label='Validation Accuracy')
-# plt.legend(loc='lower right')
-# plt.title('Training and Validation Accuracy')
+plt.figure(figsize=(8, 8))
+plt.subplot(1, 2, 1)
+plt.plot(epochs_range, acc, label='Training Accuracy')
+plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+plt.legend(loc='lower right')
+plt.title('Training and Validation Accuracy')
 
-# plt.subplot(1, 2, 2)
-# plt.plot(epochs_range, loss, label='Training Loss')
-# plt.plot(epochs_range, val_loss, label='Validation Loss')
-# plt.legend(loc='upper right')
-# plt.title('Training and Validation Loss')
-# plt.show()
+plt.subplot(1, 2, 2)
+plt.plot(epochs_range, loss, label='Training Loss')
+plt.plot(epochs_range, val_loss, label='Validation Loss')
+plt.legend(loc='upper right')
+plt.title('Training and Validation Loss')
+plt.show()
 
-model.save('my_model') # Save trained model
+model.save('my_model_new') # Save trained model
