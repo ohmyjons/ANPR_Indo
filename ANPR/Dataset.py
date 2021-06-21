@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import random
 import string
 
-img = cv.imread("./pict/img8.png", cv.IMREAD_COLOR)
+img = cv.imread("./pict/imgA.png", cv.IMREAD_COLOR)
 img_grey = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
 cv.imshow('img', img_grey)
 cv.waitKey(0)
@@ -70,7 +70,7 @@ def segmentasiKarakter(img_plate_gray):
         # Dapatkan kandidat karakter jika:
         #   tinggi kontur dalam rentang 40 - 60 piksel
         #   dan lebarnya lebih dari atau sama dengan 10 piksel 
-        if h_char >= 40 and h_char <= 90 and w_char >=5:
+        if h_char >= 30 and h_char <= 90 and w_char >=5:
 
             # dapatkan index kandidat karakternya
             index_chars_candidate.append(index_counter_contour_plate)
@@ -281,7 +281,7 @@ def segmentasiKarakter(img_plate_gray):
             # resize citra karakternya
             char_crop = cv.resize(char_crop, (img_width, img_height))
             # name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
-            cv.imwrite('./dataset2_40/8/8_'+ name +'.png',char_crop)
+            cv.imwrite('./dataset2_40/A/A_'+ name +'.png',char_crop)
 
         # Gabungkan string pada list
         plate_number = ''
