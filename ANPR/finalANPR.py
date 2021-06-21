@@ -35,7 +35,7 @@ import random
 # img = cv.imread("./test_images/platad.jpeg")  
 # img = cv.imread("./test_images/platl.jpeg") 
 # img = cv.imread("./test_images/plat3.jpeg") 
-# img = cv.imread("./test_images/plat_new_1.jpeg") 
+img = cv.imread("./test_images/plat_new_1.jpeg") 
 cv.imshow('img',img)
 cv.waitKey(0)
 
