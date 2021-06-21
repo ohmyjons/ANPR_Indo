@@ -9,7 +9,8 @@ from tensorflow.keras.models import Sequential
 # I follow this instruction for image classification: 
 # https://www.tensorflow.org/tutorials/images/classification
 
-data_dir = './dataset' # training dataset folder
+# data_dir = './dataset' # training dataset folder
+data_dir = './dataset2_40' # training dataset folder
 
 batch_size = 32
 img_height = 40
@@ -66,7 +67,7 @@ model.compile(optimizer='adam',
 
 model.summary()
 
-epochs=100
+epochs=50
 history = model.fit(
   train_ds,
   validation_data=val_ds,

@@ -26,13 +26,13 @@ import random
 # img = cv.imread("./test_images/AA5627JT.jpg")
 # img = cv.imread("./test_images/AB2638XU.jpg") 
 # img = cv.imread("./test_images/AB5592EG.jpg")
-img = cv.imread("./test_images/AD2914JG.jpg")  # segmentasi salah D dobel
+# img = cv.imread("./test_images/AD2914JG.jpg") 
 # img = cv.imread("./test_images/B3023KEZ.jpg")
 # img = cv.imread("./test_images/plat1.jpeg") 
 # img = cv.imread("./test_images/plat2.jpeg") 
 # img = cv.imread("./test_images/plat3.jpeg") 
-# img = cv.imread("./test_images/platw.jpeg")  #Salah Segmentasi 1 dan 0
-# img = cv.imread("./test_images/platad.jpeg")  # Salah Segementasi di D
+# img = cv.imread("./test_images/platw.jpeg")  
+# img = cv.imread("./test_images/platad.jpeg")  
 # img = cv.imread("./test_images/platl.jpeg") 
 # img = cv.imread("./test_images/plat3.jpeg") 
 # img = cv.imread("./test_images/plat_new_1.jpeg") 
@@ -319,7 +319,7 @@ def segmentasiKarakter(img_plate_gray):
         # Dapatkan kandidat karakter jika:
         #   tinggi kontur dalam rentang 40 - 60 piksel
         #   dan lebarnya lebih dari atau sama dengan 10 piksel 
-        if h_char >= 40 and h_char <= 90 and w_char >=11:
+        if h_char >= 40 and h_char <= 70 and w_char >=11:
 
             # dapatkan index kandidat karakternya
             index_chars_candidate.append(index_counter_contour_plate)
