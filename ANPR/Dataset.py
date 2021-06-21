@@ -4,10 +4,10 @@ from matplotlib import pyplot as plt
 import random
 import string
 
-img = cv.imread("./pict/imgA.png", cv.IMREAD_COLOR)
+img = cv.imread("./pict/imgM.png", cv.IMREAD_COLOR)
 img_grey = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
-cv.imshow('img', img_grey)
-cv.waitKey(0)
+# cv.imshow('img', img_grey)
+# cv.waitKey(0)
 
 fig = plt.figure(figsize=(10, 7))
 row_fig = 1
@@ -31,8 +31,8 @@ def segmentasiKarakter(img_plate_gray):
     # buat kernel dengan bentuk cross dan ukuran 3x3
     kernel = cv.getStructuringElement(cv.MORPH_CROSS, (3,3))
 
-    cv.imshow("sebelum open", img_plate_bw)
-    cv.waitKey(0)
+    # cv.imshow("sebelum open", img_plate_bw)
+    # cv.waitKey(0)
 
     # lakukan operasi opening dengan kernel di atas
     # img_plate_bw = cv.morphologyEx(img_plate_bw, cv.MORPH_OPEN, kernel) # apply morph open
@@ -218,7 +218,7 @@ def segmentasiKarakter(img_plate_gray):
             cv.putText(img_plate_rgb3, str(index_chars_sorted.index(char_sorted)),(x, y + h + 50), cv.FONT_ITALIC, 2.0, (0,0,255), 3)
         
         # tampilkan hasil pengurutan
-        cv.imshow('Karakter Terurut', img_plate_rgb3)
+        # cv.imshow('Karakter Terurut', img_plate_rgb3)
 
         # ==== Cek Segmentasi Karakter START ====
         # Bisa di comment/uncomment
@@ -281,7 +281,7 @@ def segmentasiKarakter(img_plate_gray):
             # resize citra karakternya
             char_crop = cv.resize(char_crop, (img_width, img_height))
             # name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
-            cv.imwrite('./dataset2_40/A/A_'+ name +'.png',char_crop)
+            cv.imwrite('./dataset2_40/M/M_'+ name +'.png',char_crop)
 
         # Gabungkan string pada list
         plate_number = ''
