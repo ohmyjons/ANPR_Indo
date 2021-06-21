@@ -5,6 +5,8 @@ from matplotlib import pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
 import imutils
+import string
+import random
 
 
 # def Anpr_Indo(img):
@@ -56,7 +58,7 @@ def normalisasiCahaya(img_gray):
 
     # lakukan operasi opening ke citra grayscale dengan kernel yang sudah dibuat (var: kernel)
     img_opening = cv.morphologyEx(img_gray, cv.MORPH_OPEN, kernel)
-
+    
     # Normalisasi cahaya (2)
     # lakukan pengurangan citra grayscale dengan citra hasil opening
     img_norm = img_gray - img_opening
@@ -259,9 +261,10 @@ def deteksiPlatnomer(img_norm_bw,img_gray):
 
 img_crop = deteksiPlatnomer(img_norm_bw,img_gray)
 print(cek_lowlight)
+# cv.imshow('img_crop',img_crop)
 # print(img_crop)
 
-# SEGMENTASI KARAKTER
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~SEGMENTASI KARAKTER ~~~~~~~~~~~~~~~~~~~~~~~
 # karakter yang di segmentasi adalah baris pertama yang berisi nilai unik setiap kendaraan
 def segmentasiKarakter(img_plate_gray):
     
@@ -289,7 +292,7 @@ def segmentasiKarakter(img_plate_gray):
 
     # Segmentasi karakter menggunakan contours
     # dapatkan kontur dari plat nomor
-    contours_plate, hierarchy = cv.findContours(img_plate_bw, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE) 
+    contours_plate, hierarchy = cv.findContours(img_plate_bw, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE) 
 
     # index contour yang berisi kandidat karakter
     index_chars_candidate = [] #index
@@ -328,7 +331,8 @@ def segmentasiKarakter(img_plate_gray):
         index_counter_contour_plate += 1
 
     # tampilkan kandidat karakter
-    # cv.imshow('Kandidat Karakter',img_plate_rgb)
+    cv.imshow('Kandidat Karakter',img_plate_rgb)
+    cv.waitKey(0)
 
     if index_chars_candidate == []:
 
@@ -515,6 +519,7 @@ def segmentasiKarakter(img_plate_gray):
 
         # untuk menyimpan string karakter
         num_plate = []
+        name = 0
         for char_sorted in index_chars_sorted:
             x,y,w,h = cv.boundingRect(contours_plate[char_sorted])
 
@@ -523,6 +528,8 @@ def segmentasiKarakter(img_plate_gray):
 
             # resize citra karakternya
             char_crop = cv.resize(char_crop, (img_width, img_height))
+            name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
+            cv.imwrite('./testdata/' +  str(name) +'.png',char_crop)
 
             # preprocessing citra ke numpy array
             img_array = keras.preprocessing.image.img_to_array(char_crop)
