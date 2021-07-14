@@ -12,10 +12,18 @@ from tensorflow.keras.models import Sequential
 # data_dir = './dataset' # training dataset folder
 data_dir = './dataset2_40' # training dataset folder
 
+# Jumlah sample data yagn di testing adlaah 32 sample dulu 
+# baru 32 sample selanjutanya dan selanjutnya
 batch_size = 32
+
+# size gambar 
 img_height = 40
 img_width = 40
 
+
+# Preprocesiing data
+
+# data untuk training dataset sebanyak 80%
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
   data_dir,
   validation_split=0.2,
@@ -24,6 +32,8 @@ train_ds = tf.keras.preprocessing.image_dataset_from_directory(
   image_size=(img_height, img_width),
   batch_size=batch_size)
 
+
+# data untuk testing dataset 20%
 val_ds = tf.keras.preprocessing.image_dataset_from_directory(
   data_dir,
   validation_split=0.2,
@@ -32,14 +42,20 @@ val_ds = tf.keras.preprocessing.image_dataset_from_directory(
   image_size=(img_height, img_width),
   batch_size=batch_size)
 
+
+# mendapatkna nama class berdasarakan nama folder data
 class_names = train_ds.class_names
 print(class_names)
+
+
 
 AUTOTUNE = tf.data.AUTOTUNE
 
 train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
+# standarisasi data 
+# karena rgb bernilai [0,255] dan itu tidak cocok untuk NN maka kita ubah menjadi [0,1]
 normalization_layer = layers.experimental.preprocessing.Rescaling(1./255)
 
 normalized_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
@@ -61,13 +77,19 @@ model = Sequential([
   layers.Dense(num_classes)
 ])
 
+
+
+
 model.compile(optimizer='adam',
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
 model.summary()
 
-epochs=50
+
+
+epochs=10
+
 history = model.fit(
   train_ds,
   validation_data=val_ds,

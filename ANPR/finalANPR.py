@@ -35,12 +35,12 @@ import random
 # img = cv.imread("./test_images/platad.jpeg")  
 # img = cv.imread("./test_images/platl.jpeg") 
 # img = cv.imread("./test_images/plat3.jpeg") 
-img = cv.imread("./test_images/plat_new_1.jpeg") 
+# img = cv.imread("./test_images/plat_new_1.jpeg") 
 cv.imshow('img',img)
 cv.waitKey(0)
 
 
-
+# Prapengolahan
 # resize citra dengan imutils
 # dimana setiap citrayang masuk akan diubah ukuran pixelnya menjadi 1280
 # degnan ratio tetap sama
@@ -109,7 +109,7 @@ def lowLight(img_grey):
     kernel = np.ones((20,20), np.uint8)
     tophat = cv.morphologyEx(img_grey,cv.MORPH_TOPHAT, kernel)
     
-    # otsu + biner image
+    # otsu + thresh biner image
     ret,img_otsu = cv.threshold(tophat,0,255, cv.THRESH_BINARY + cv.THRESH_OTSU)
 
     cv.imshow('Otsu',img_otsu)    
@@ -141,8 +141,8 @@ img_norm_bw = normalisasiCahaya(img_gray)
 # img_norm_bw = lowLight(img_gray)
 
 
-# Deteksi Platnomer
-# Dalam penerapannya kita menggunakan cotours dari open cv
+# ~~~~~~~~~~~~~~    Deteksi Platnomer   ~~~~~~~~~~~~~~~~~~~~
+# Dalam penerapannya kita menggunakan contours dari open cv
 # untuk mendeteksi plat nomer
 
 def deteksiPlatnomer(img_norm_bw,img_gray):
@@ -215,7 +215,10 @@ def deteksiPlatnomer(img_norm_bw,img_gray):
 
         # crop citra plat 
         img_plate_gray = img_gray[y_plate:y_plate+h_plate, x_plate:x_plate+w_plate]
+        print(x_plate)
         print(img_plate_gray)
+        exit
+        
     else:
         print('Dapat dua lokasi plat, pilih lokasi plat kedua')
 
@@ -231,9 +234,9 @@ def deteksiPlatnomer(img_norm_bw,img_gray):
         # crop citra plat 
         img_plate_gray = img_gray[y_plate:y_plate+h_plate, x_plate:x_plate+w_plate]
         # print(img_plate_gray)
-
+        print(img_plate_gray)
+        exit
     # ==== Cek Deteksi Plat START ====
-    # Bisa di comment/uncomment
 
     fig2 = plt.figure(figsize=(10, 7))
     row_fig = 2
@@ -318,7 +321,7 @@ def segmentasiKarakter(img_plate_gray):
         
         # Dapatkan kandidat karakter jika:
         #   tinggi kontur dalam rentang 40 - 60 piksel
-        #   dan lebarnya lebih dari atau sama dengan 10 piksel 
+        #   dan lebarnya lebih dari atau sama dengan 11 piksel 
         if h_char >= 40 and h_char <= 70 and w_char >=11:
 
             # dapatkan index kandidat karakternya
@@ -348,7 +351,7 @@ def segmentasiKarakter(img_plate_gray):
         #   Bagian karakter plat nomor akan selalu sebaris, 
         #       memiliki nilai y yang hampir sama atau tidak terlalu besar perbedaannya.
         #       Maka bandingkan nilai y dari setiap kandidat satu dengan kandidat lainnya. 
-        #   Jika perbedaannya tidak lebih dari 11 piksel maka tambahkan score 1 point ke kandidat tersebut.
+        #   Jika perbedaannya tidak lebih dari 30 piksel maka tambahkan score 1 point ke kandidat tersebut.
         #       Kandidat yang benar-benar sebuah karakter akan memiliki nilai score yang sama dan tertinggi
 
         # Scoring
@@ -377,15 +380,15 @@ def segmentasiKarakter(img_plate_gray):
                     y_difference = abs(yA - yB)
                     # print(y_difference)
 
-                    # jika perbedaannya kurang dari 50 piksel
-                    if y_difference < 50:
+                    # jika perbedaannya kurang dari 30 piksel
+                    if y_difference < 30:
                         
                         # tambahkan nilai score pada kandidat tersebut
                         score_chars_candidate[counter_index_chars_candidate] = score_chars_candidate[counter_index_chars_candidate] + 1 
             # lanjut ke kandidat lain
             counter_index_chars_candidate += 1
 
-        print(score_chars_candidate)
+        # print(score_chars_candidate)
 
         # untuk menyimpan karakter
         index_chars = []
@@ -404,7 +407,7 @@ def segmentasiKarakter(img_plate_gray):
         # Sampai disini sudah didapatkan karakternya
         #   sayangnya karena ini menggunakan contours, 
         #   urutan karakter masih berdasarkan letak sumbu y, dari atas ke bawah,
-        #   misal yang harusnya Z 1234 AB hasilnya malah 1 3Z24 BA.
+        #   misal yang harusnya W 1234 AB hasilnya malah 1 3W24 BA.
         #   Hal ini akan menjadi masalah ketika nanti proses klasifikasi karakter.
         #   Maka mari disusun berdasarkan sumbu x, dari kiri ke kanan.
 
@@ -470,7 +473,6 @@ def segmentasiKarakter(img_plate_gray):
         # cv.imshow('Karakter Terurut', img_plate_rgb3)
 
         # ==== Cek Segmentasi Karakter START ====
-        # Bisa di comment/uncomment
 
         fig3 = plt.figure(figsize=(10, 7))
         row_fig = 2
@@ -528,8 +530,6 @@ def segmentasiKarakter(img_plate_gray):
 
             # resize citra karakternya
             char_crop = cv.resize(char_crop, (img_width, img_height))
-            name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
-            cv.imwrite('./testdata/' +  str(name) +'.png',char_crop)
 
             # preprocessing citra ke numpy array
             img_array = keras.preprocessing.image.img_to_array(char_crop)
@@ -540,7 +540,7 @@ def segmentasiKarakter(img_plate_gray):
             # buat prediksi
             predictions = model.predict(img_array)
             score = tf.nn.softmax(predictions[0]) 
-            # print(score)
+
             num_plate.append(class_names[np.argmax(score)])
             print(class_names[np.argmax(score)], end='')
 
@@ -552,6 +552,7 @@ def segmentasiKarakter(img_plate_gray):
         # Hasil deteksi dan pembacaan
         cv.putText(img_show_plate, plate_number,(x_plate, y_plate + h_plate + 50), cv.FONT_ITALIC, 2.0, (0,255,0), 3)
         cv.imshow(plate_number, img_show_plate)
+        cv.waitKey(0)
 
         print("\n"+plate_number)
     
